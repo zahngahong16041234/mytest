@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>audio Demo</title>
+    <link rel="stylesheet" href="css/reset.css"/>
+    <link rel="stylesheet" href="css/demo.css"/>
+    <script src="js/rem.js"></script>
+</head>
+<body>
+    <div id="bd">
+        <header>我的收藏</header>
+        <div id="iscroll">
+            <ul id="list">
+            </ul>
+        </div>
+        <section id="progress" class="ctrlPro">
+            <i class="ctrlPro"></i>
+            <p class="ctrlPro" id="bar"></p>
+        </section>
+        <section id="box">
+            <i id="img">
+                <img id="thumb" src="imgs/thumb.jpg" alt=""/>
+            </i>
+            <i class="icon" id="prev">&#xe601;</i>
+            <i class="icon" id="play">&#xe600;</i>
+            <i class="icon" id="paused">&#xe606;</i>
+            <i class="icon" id="next">&#xe602;</i>
+            <i class="icon" id="heart">&#xe605;</i>
+        </section>
+    </div>
+    <audio id="ad" autoplay>
+        <source src="audio/test.mp3" />
+    </audio>
+    <script src="js/iscroll.js"></script>
+    <script>
+        (function(){
+            var myAudio = document.getElementById("ad"),
+                list = [
+                    {
+                        id: "1",
+                        name: "怒放的生命",
+                        singer: "汪峰",
+                        src: "audio/test.mp3"
+                    },
+                    {
+                        id: "2",
+                        name: "后来",
+                        singer: "刘若英",
+                        src: "audio/bg.mp3"
+                    },
+                    {
+                        id: "3",
+                        name: "断点",
+                        singer: "张敬轩",
+                        src: "audio/bg.ogg"
+                    },
+                    {
+                        id: "2",
+                        name: "后来",
+                        singer: "刘若英",
+                        src: "audio/bg.mp3"
+                    },
+                    {
+                        id: "3",
+                        name: "断点",
+                        singer: "张敬轩",
+                        src: "audio/bg.ogg"
+                    },
+                    {
+                        id: "2",
+                        name: "后来",
+                        singer: "刘若英",
+                        src: "audio/bg.mp3"
+                    },
+                    {
+                        id: "3",
+                        name: "断点",
+                        singer: "张敬轩",
+                        src: "audio/bg.ogg"
+                    },
+                    {
+                        id: "2",
+                        name: "后来",
+                        singer: "刘若英",
+                        src: "audio/bg.mp3"
+                    },
+                    {
+                        id: "3",
+                        name: "断点",
+                        singer: "张敬轩",
+                        src: "audio/bg.ogg"
+                    },
+                    {
+                        id: "2",
+                        name: "后来",
+                        singer: "刘若英",
+                        src: "audio/bg.mp3"
+                    },
+                    {
+                        id: "3",
+                        name: "断点",
+                        singer: "张敬轩",
+                        src: "audio/bg.ogg"
+                    },
+                    {
+                        id: "2",
+                        name: "后来",
+                        singer: "刘若英",
+                        src: "audio/bg.mp3"
+                    },
+                    {
+                        id: "3",
+                        name: "断点",
+                        singer: "张敬轩",
+                        src: "audio/bg.ogg"
+                    },
+                    {
+                        id: "2",
+                        name: "后来",
+                        singer: "刘若英",
+                        src: "audio/bg.mp3"
+                    },
+                    {
+                        id: "3",
+                        name: "断点",
+                        singer: "张敬轩",
+                        src: "audio/bg.ogg"
+                    },
+                    {
+                        id: "2",
+                        name: "后来",
+                        singer: "刘若英",
+                        src: "audio/bg.mp3"
+                    },
+                    {
+                        id: "3",
+                        name: "断点",
+                        singer: "张敬轩",
+                        src: "audio/bg.ogg"
+                    },
+                    {
+                        id: "2",
+                        name: "后来",
+                        singer: "刘若英",
+                        src: "audio/bg.mp3"
+                    },
+                    {
+                        id: "3",
+                        name: "断点",
+                        singer: "张敬轩",
+                        src: "audio/bg.ogg"
+                    },
+                    {
+                        id: "2",
+                        name: "后来",
+                        singer: "刘若英",
+                        src: "audio/bg.mp3"
+                    },
+                    {
+                        id: "3",
+                        name: "断点",
+                        singer: "张敬轩",
+                        src: "audio/bg.ogg"
+                    }
+                ],
+                oBd = document.getElementById("bd"),
+                oList = document.getElementById("list"),
+                oItems = oList.getElementsByTagName("li"),
+                //oBtnPrev = document.getElementById("prev"),
+                //oBtnNext = document.getElementById("next"),
+                //oBtnHeart = document.getElementById("heart"),
+                oBtnPaused = document.getElementById("paused"),
+                oBtnPlay = document.getElementById("play"),
+                oProgress = document.getElementById("progress"),
+                oSlider = oProgress.getElementsByTagName("i")[0],
+                oBar = document.getElementById("bar"),
+                isDragging = false,
+                currTime = 0,
+                intv = 0,
+/*
+                playState = function(){
+                    var curr = myAudio.currentTime,
+                        duration = myAudio.duration,
+                        percent = curr / duration,
+                        maxWidth = oBd.offsetWidth;
+                    oBar.style = "width:" + (percent * maxWidth) + "px";
+                    oSlider.style = "left:" + (percent * maxWidth) + "px";
+                },
+*/
+                playState = function(){ //让进度条显示状态 和 当前播放进度 保持同步
+                    var maxTime = myAudio.duration,
+                        currTime = myAudio.currentTime,
+                        rent = currTime / maxTime;
+                    oSlider.style = "left:" + (rent * 100) + "%";
+                    oBar.style = "width:" + (rent * 100) + "%";
+                },
+                keepSync = function(){
+                    intv = window.setInterval(playState, 10);
+                },
+                stopSync = function(){
+                    window.clearInterval(intv);
+                },
+                updateProgress = function(evt){
+                    var posX = evt.pageX - oBd.offsetLeft,
+                        maxWidth = oBd.offsetWidth,
+                        percent = posX / maxWidth,
+                        duration = myAudio.duration;
+                    oBar.style = "width:" + (percent * maxWidth) + "px";
+                    oSlider.style = "display:block;left:" + posX + "px";
+                    currTime = duration * percent;
+                },
+                initList = function(list){
+                    var len = list.length;
+                    for(var i = 0; i < len; i++){
+                        //list[i]
+                        var strHtml = '<li>'
+                            +   '<i class="idx">' + (i + 1) + '</i>'
+                            +   '<section data-url="' + list[i].src + '">'
+                            +   '<p>' + list[i].name + '</p>'
+                            +   '<p>' + list[i].singer + '</p>'
+                            +   '</section>'
+                            +   '<i class="del icon">&#xe607;</i>'
+                            +   '</li>';
+                        var oldHtml = oList.innerHTML;
+                        oList.innerHTML += strHtml;
+                    }
+                };
+            initList(list);
+            keepSync();
+            oProgress.onmousedown = function(e){
+                console.log(1);
+                var posX = e.pageX - oBd.offsetLeft,
+                    rent = posX / oBd.offsetWidth;
+                currTime = myAudio.duration * rent;
+                isDragging = true;
+                stopSync();
+                oSlider.style = "display:block;left:" + (rent * 100) + "%";
+                oBar.style = "width:" + (rent * 100) + "%";
+            };
+            oBd.onmousemove = function(e){
+                if(isDragging){
+                    var posX = e.pageX - oBd.offsetLeft,
+                        rent = posX / oBd.offsetWidth;
+                    currTime = myAudio.duration * rent;
+                    oSlider.style = "display:block;left:" + (rent * 100) + "%";
+                    oBar.style = "width:" + (rent * 100) + "%";
+                }
+            }
+            document.body.onmouseup = function(e){
+                console.log(2);
+                if(isDragging){
+                    isDragging = false;
+                    myAudio.currentTime = currTime;
+                    keepSync();
+                }
+            }
+            oBtnPaused.onclick = function(){
+                myAudio.pause();
+                this.style = "display:none";
+                oBtnPlay.style = "display:flex";
+            }
+            oBtnPlay.onclick = function(){
+                myAudio.play();
+                this.style = "display:none";
+                oBtnPaused.style = "display:flex";
+            }
+/*
+            oProgress.onmousedown = function(e) {
+                oSlider.style = "display:block";
+                drag = true;
+                updateProgress(e);
+                window.clearInterval(intv);
+            }
+            oBd.onmousemove = function(e){
+                if(drag){
+                    updateProgress(e);
+                }
+            }
+            oBd.onmouseup = function(e) {
+                //if(e.target.className === "ctrlPro") {
+                if(drag) {
+                    myAudio.currentTime = currTime;
+                    oSlider.style = "display:none";
+                    drag = false;
+                    intv = window.setInterval(playState, 10);
+                }
+            }
+            var len = oItems.length;
+            for(var i = 0; i < len; i++){
+                oItems[i].idx = i;
+                oItems[i].onclick = function(){
+                    console.log(this.idx);
+                }
+            }
+*/
+            var is = new iScroll("iscroll");
+        })()
+    </script>
+</body>
+</html>
